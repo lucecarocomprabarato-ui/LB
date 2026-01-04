@@ -3,125 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Tienda Editable</title>
+    <title>Tienda Multicategoría</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --dark: #1e293b;
-            --light: #f8fafc;
+            --primario: #2563eb;
+            --oscuro: #0f172a;
+            --blanco: #ffffff;
+            --gris: #f1f5f9;
         }
 
-        body { font-family: sans-serif; margin: 0; background: var(--light); }
-        header { background: var(--dark); color: white; padding: 1rem; text-align: center; }
-        
-        .container { max-width: 1000px; margin: auto; padding: 20px; }
-        
-        /* Sección de Categorías */
-        .category-section { margin-bottom: 40px; }
-        .category-title { border-bottom: 2px solid var(--primary); padding-bottom: 5px; color: var(--dark); }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--gris); }
 
-        .product-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
-            gap: 20px; 
-            margin-top: 20px;
+        /* Navegación por pestañas */
+        nav {
+            background: var(--oscuro);
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .product-card { 
-            background: white; 
-            padding: 15px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        nav button {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        nav button:hover, nav button.active {
+            background: var(--primario);
+            border-color: var(--primario);
+        }
+
+        .contenedor { max-width: 1100px; margin: 20px auto; padding: 0 20px; }
+
+        /* Control de secciones */
+        .seccion { display: none; }
+        .seccion.activa { display: block; }
+
+        /* Cuadrícula de productos */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .tarjeta {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             text-align: center;
         }
 
-        /* Estilo para que sea editable */
-        [contenteditable="true"]:hover {
-            outline: 2px dashed var(--primary);
-            background: #f0f7ff;
-        }
+        [contenteditable="true"]:hover { background: #f0f7ff; outline: 1px dashed var(--primario); }
 
-        button {
-            background: var(--primary);
+        .btn-comprar {
+            background: var(--primario);
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 10px;
+            width: 100%;
             border-radius: 5px;
             cursor: pointer;
             margin-top: 10px;
         }
 
-        button:hover { opacity: 0.9; }
+        /* Estilos de la Cesta */
+        .lista-cesta {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            list-style: none;
+        }
 
-        .cart-status {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--dark);
-            color: white;
-            padding: 15px;
-            border-radius: 50px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        .item-cesta {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .total-cesta {
+            font-size: 1.5rem;
+            text-align: right;
+            margin-top: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1 contenteditable="true">Nombre de tu Tienda</h1>
-    <p>Haz clic en cualquier texto para editarlo</p>
-</header>
+<nav id="menu">
+    <button onclick="mostrarSeccion('inicio')" class="active">Inicio</button>
+    <button onclick="mostrarSeccion('sudaderas')">Sudaderas/Abrigos</button>
+    <button onclick="mostrarSeccion('zapatillas')">Zapatillas</button>
+    <button onclick="mostrarSeccion('pantalones')">Pantalones</button>
+    <button onclick="mostrarSeccion('perfumes')">Perfumes</button>
+    <button onclick="mostrarSeccion('relojes')">Relojes</button>
+    <button onclick="mostrarSeccion('reventa')">Reventa</button>
+    <button onclick="mostrarSeccion('cesta')" style="border-color: #fbbf24;">🛒 Mi Cesta (<span id="count-nav">0</span>)</button>
+</nav>
 
-<div class="container">
-    <section class="category-section">
-        <h2 class="category-title" contenteditable="true">Electrónica</h2>
-        <div class="product-grid">
-            <div class="product-card">
-                <h3 contenteditable="true">Smartphone X</h3>
-                <p>Precio: $<span class="price" contenteditable="true">500</span></p>
-                <button onclick="addToCart('Smartphone X', 500)">Comprar</button>
-            </div>
-            <div class="product-card">
-                <h3 contenteditable="true">Audífonos Pro</h3>
-                <p>Precio: $<span class="price" contenteditable="true">150</span></p>
-                <button onclick="addToCart('Audífonos Pro', 150)">Comprar</button>
+<div class="contenedor">
+
+    <section id="inicio" class="seccion activa">
+        <h1 contenteditable="true">Bienvenidos a mi Tienda</h1>
+        <p contenteditable="true">Selecciona una categoría arriba para empezar a comprar. Puedes editar cualquier nombre o precio haciendo clic.</p>
+    </section>
+
+    <section id="sudaderas" class="seccion">
+        <h2 contenteditable="true">Sudaderas y Abrigos</h2>
+        <div class="grid">
+            <div class="tarjeta">
+                <h3 contenteditable="true">Sudadera con Capucha</h3>
+                <p>Precio: $<span class="precio" contenteditable="true">45</span></p>
+                <button class="btn-comprar" onclick="agregar('Sudadera Capucha', 45)">Añadir</button>
             </div>
         </div>
     </section>
 
-    <section class="category-section">
-        <h2 class="category-title" contenteditable="true">Ropa</h2>
-        <div class="product-grid">
-            <div class="product-card">
-                <h3 contenteditable="true">Camiseta Básica</h3>
-                <p>Precio: $<span class="price" contenteditable="true">25</span></p>
-                <button onclick="addToCart('Camiseta Básica', 25)">Comprar</button>
+    <section id="zapatillas" class="seccion">
+        <h2 contenteditable="true">Zapatillas</h2>
+        <div class="grid">
+            <div class="tarjeta">
+                <h3 contenteditable="true">Deportivas Running</h3>
+                <p>Precio: $<span class="precio" contenteditable="true">80</span></p>
+                <button class="btn-comprar" onclick="agregar('Deportivas Running', 80)">Añadir</button>
             </div>
         </div>
     </section>
-</div>
 
-<div class="cart-status">
-    🛒 Carrito: <span id="cart-count">0</span> artículos | Total: $<span id="cart-total">0</span>
+    <section id="pantalones" class="seccion">
+        <h2 contenteditable="true">Pantalones</h2>
+        <div class="grid">
+            <div class="tarjeta">
+                <h3 contenteditable="true">Vaqueros Slim</h3>
+                <p>Precio: $<span class="precio" contenteditable="true">35</span></p>
+                <button class="btn-comprar" onclick="agregar('Vaqueros Slim', 35)">Añadir</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="perfumes" class="seccion">
+        <h2 contenteditable="true">Perfumes</h2>
+        <div class="grid">
+            <div class="tarjeta">
+                <h3 contenteditable="true">Esencia de Verano</h3>
+                <p>Precio: $<span class="precio" contenteditable="true">60</span></p>
+                <button class="btn-comprar" onclick="agregar('Esencia Verano', 60)">Añadir</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="relojes" class="seccion">
+        <h2 contenteditable="true">Relojes</h2>
+        <div class="grid">
+            <div class="tarjeta">
+                <h3 contenteditable="true">Reloj de Acero</h3>
+                <p>Precio: $<span class="precio" contenteditable="true">120</span></p>
+                <button class="btn-comprar" onclick="agregar('Reloj Acero', 120)">Añadir</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="reventa" class="seccion">
+        <h2 contenteditable="true">Artículos de Reventa</h2>
+        <p>Productos exclusivos de segunda mano o coleccionables.</p>
+        <div class="grid">
+            <div class="tarjeta">
+                <h3 contenteditable="true">Edición Limitada</h3>
+                <p>Precio: $<span class="precio" contenteditable="true">250</span></p>
+                <button class="btn-comprar" onclick="agregar('Edición Limitada', 250)">Añadir</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="cesta" class="seccion">
+        <h2>Tu Cesta de la Compra</h2>
+        <div id="lista-cesta" class="lista-cesta">
+            <p>Tu cesta está vacía.</p>
+        </div>
+        <div class="total-cesta">Total: $<span id="total-cesta">0.00</span></div>
+        <button class="btn-comprar" style="background: #10b981; margin-top: 20px;" onclick="finalizarCompra()">Realizar Pedido</button>
+    </section>
+
 </div>
 
 <script>
+    let carrito = [];
     let total = 0;
-    let count = 0;
 
-    function addToCart(name, price) {
-        // En un caso real, aquí obtendríamos el precio actualizado del elemento editable
-        count++;
-        total += parseFloat(price);
+    function mostrarSeccion(id) {
+        // Ocultar todas las secciones
+        document.querySelectorAll('.seccion').forEach(sec => sec.classList.remove('activa'));
+        // Quitar clase activa de botones
+        document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
         
-        document.getElementById('cart-count').innerText = count;
-        document.getElementById('cart-total').innerText = total.toFixed(2);
-        
-        alert(`¡Añadido ${name} al carrito!`);
+        // Mostrar la elegida
+        document.getElementById(id).classList.add('activa');
+        event.currentTarget.classList.add('active');
     }
 
-    // Nota: Los cambios hechos al editar el texto son temporales (se borran al recargar).
-    // Para que sean permanentes necesitarías una base de datos.
+    function agregar(nombre, precio) {
+        carrito.push({ nombre, precio });
+        actualizarCesta();
+    }
+
+    function actualizarCesta() {
+        const contenedorLista = document.getElementById('lista-cesta');
+        const countNav = document.getElementById('count-nav');
+        const totalTxt = document.getElementById('total-cesta');
+        
+        countNav.innerText = carrito.length;
+        
+        if (carrito.length === 0) {
+            contenedorLista.innerHTML = '<p>Tu cesta está vacía.</p>';
+            totalTxt.innerText = "0.00";
+            return;
+        }
+
+        contenedorLista.innerHTML = '';
+        total = 0;
+
+        carrito.forEach((prod, index) => {
+            total += prod.precio;
+            contenedorLista.innerHTML += `
+                <div class="item-cesta">
+                    <span>${prod.nombre}</span>
+                    <span>$${prod.precio.toFixed(2)} <button onclick="eliminar(${index})" style="background:red; color:white; border:none; border-radius:3px; cursor:pointer;">X</button></span>
+                </div>
+            `;
+        });
+
+        totalTxt.innerText = total.toFixed(2);
+    }
+
+    function eliminar(index) {
+        carrito.splice(index, 1);
+        actualizarCesta();
+    }
+
+    function finalizarCompra() {
+        if(carrito.length === 0) return alert("La cesta está vacía");
+        alert("¡Pedido realizado con éxito por un total de $" + total.toFixed(2) + "!");
+        carrito = [];
+        actualizarCesta();
+    }
 </script>
 
 </body>
